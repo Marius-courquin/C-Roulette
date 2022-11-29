@@ -8,7 +8,7 @@ all : libUtils libSharedMemory server
 
 clean :
 	rm -f $(OBJ_DIR)/*.o
-	rm -f $(LIB_DIR)/*.a
+	rm -f $(LIB_DIR)/*.so
 	rm -f $(BIN_DIR)/*
 
 libUtils.o : $(LIB_DIR)/libUtils.c

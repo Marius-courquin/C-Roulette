@@ -1,16 +1,7 @@
-#include "../include/utilsLib.h"
+#include "../include/libUtils.h"
 #include "../include/server.h"
 
 
-void initSignalHandler(){
-    struct sigaction serverAction;
-    serverAction.sa_handler = serverSignalHandler;
-    sigemptyset(&serverAction.sa_mask);
-    sigprocmask(SIG_SETMASK, &serverAction.sa_mask,NULL); 
-    sigaction(SIGUSR1, &serverAction, NULL);
-    sigaction(SIGUSR2, &serverAction, NULL);
-    sigaction(SIGINT, &serverAction, NULL);
-}
 
 
 void _addMemoryTab(pid_t **tabPid, int *lenTabPid, pid_t pid){

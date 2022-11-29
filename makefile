@@ -4,8 +4,10 @@ SRC_DIR=src
 LIB_DIR=lib
 BIN_DIR=bin
 
-all : libUtils libSharedMemory server
+all : directory libUtils libSharedMemory server
 
+directory :
+	mkdir -p $(OBJ_DIR) $(BIN_DIR)
 clean :
 	rm -f $(OBJ_DIR)/*.o
 	rm -f $(LIB_DIR)/*.so

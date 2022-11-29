@@ -9,8 +9,8 @@
 
 
 #include "../include/roulette.h"
-#include "../include/sharedMemoryLib.h"
-#include "../include/utilsLib.h"
+#include "../include/libSharedMemory.h"
+#include "../include/libUtils.h"
 
 static pid_t *tabPid;
 static int lenTabPid = 0;
@@ -50,4 +50,14 @@ void serverSignalHandler(int signal, siginfo_t *info){
             printf("Unknown signal\n");
             break;
     }
+}
+
+void initSignalHandler(){
+    struct sigaction serverAction;
+    serverAction.sa_handler = serverSignalHandler;
+    sigemptyset(&serverAction.sa_mask);
+    sigprocmask(SIG_SETMASK, &serverAction.sa_mask,NULL); 
+    sigaction(SIGUSR1, &serverAction, NULL);
+    sigaction(SIGUSR2, &serverAction, NULL);
+    sigaction(SIGINT, &serverAction, NULL);
 }

@@ -12,3 +12,4 @@ typedef struct {
 } serverData;
 
 void serverSignalHandler(int signal, siginfo_t *info);
+void initSignalHandler();

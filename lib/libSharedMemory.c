@@ -1,4 +1,4 @@
-#include "../include/sharedMemoryLib.h"
+#include "../include/libSharedMemory.h"
 
 
 

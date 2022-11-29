@@ -11,4 +11,4 @@ typedef struct {
     int nbUserInGame;
 } serverData;
 
-void serverSignalHandler(int signal,siginfo_t *info);
+void serverSignalHandler(int signal, siginfo_t *info);

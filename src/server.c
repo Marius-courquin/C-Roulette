@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 }
 
 
-void serverSignalHandler(int signal,siginfo_t *info){
+void serverSignalHandler(int signal, siginfo_t *info){
 
     switch(signal){
         case SIGINT:

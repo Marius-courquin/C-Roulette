@@ -14,7 +14,7 @@ int createSharedMemory(){
 }
 
 
-void writeSharedMemory(serverData data,int sharedMemoryId){
+void writeSharedMemory(serverData data, int sharedMemoryId){
     int key = ftok("../userStorage",1111);
     serverData *sharedMemory = (serverData*)shmat(sharedMemoryId, NULL, 0);
     *sharedMemory = data;

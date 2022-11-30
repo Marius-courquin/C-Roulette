@@ -1,15 +1,10 @@
-#include <sys/shm.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <signal.h>
+#ifndef ROULETTE
+#include "roulette.h"
+#define ROULETTE 1
+#endif
 
 
-typedef struct {
-    int resultNumber;
-    pid_t pid;
-    int nbUserInGame;
-} serverData;
-
-void serverSignalHandler(int signal, siginfo_t *info);
+#define WAIT_DRAW 10
+void*serverSignalHandler(int signal, siginfo_t *info);
 void initSignalHandler();
+void *drawNumber();

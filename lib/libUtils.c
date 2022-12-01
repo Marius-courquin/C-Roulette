@@ -3,27 +3,48 @@
 
 
 
-
-void _addMemoryTab(pid_t **tabPid, int *lenTabPid, pid_t pid){
-    *lenTabPid = *lenTabPid + 1;
-    *tabPid = (pid_t*)realloc(tabPid,sizeof(pid_t)*(*lenTabPid));
-    *tabPid[*lenTabPid-1] = pid;
+void initSignalHandler(void *handlerFunction(int,siginfo_t*)){
+    struct sigaction serverAction;
+    serverAction.sa_handler = (void*)handlerFunction;
+    serverAction.sa_flags = SA_SIGINFO;
+    sigemptyset(&serverAction.sa_mask);
+    sigprocmask(SIG_SETMASK, &serverAction.sa_mask,NULL); 
+    sigaction(SIGUSR1, &serverAction, NULL);
+    sigaction(SIGUSR2, &serverAction, NULL);
+    sigaction(SIGINT, &serverAction, NULL);
+    sigaction(SIGALRM, &serverAction, NULL);
 }
-void _eraseClient(pid_t **tabPid, int *lenTabPid, pid_t pid){
+
+
+int _searchClient(pid_t *tabPid, int lenTabPid, pid_t pid){
     int i;
-    for(i = 0; i < *lenTabPid; i++){
-        if(*tabPid[i] == pid){
-           break;
+    for(i = 0; i < lenTabPid; i++){
+        if(tabPid[i] == pid){
+            return i;
         }
+    }
+    return -1;
+}
+void addMemoryTab(pid_t **tabPid, int *lenTabPid, pid_t pid){
+    if(_searchClient(*tabPid,*lenTabPid,pid) == -1){
+        *lenTabPid += 1;
+        *tabPid = realloc(*tabPid,sizeof(pid_t)*(*lenTabPid));
+        (*tabPid)[ *lenTabPid-1] = pid;
+    }
+}
+void eraseClient(pid_t **tabPid, int *lenTabPid, pid_t pid){
+    int i = _searchClient(*tabPid,*lenTabPid,pid);
+    if(i == -1){
+        perror("Client not found");
     }
     *lenTabPid = *lenTabPid -1;
     for(i; i < *lenTabPid; i++){
         *tabPid[i] = *tabPid[i+1];
     }
-    *tabPid = (pid_t*)realloc(tabPid,sizeof(pid_t)*(*lenTabPid));
+    *tabPid = realloc(*tabPid,sizeof(pid_t)*(*lenTabPid));
 }
 
-void _killAllClient(pid_t *tabPid, int lenTabPid){
+void killAllClient(pid_t *tabPid, int lenTabPid){
     for(int i = 0; i <  lenTabPid; i++){
         kill(tabPid[i],SIGKILL);
     }

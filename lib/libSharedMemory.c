@@ -1,5 +1,8 @@
 #include "../include/libSharedMemory.h"
-
+#include <sys/shm.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 
 int createSharedMemory(){

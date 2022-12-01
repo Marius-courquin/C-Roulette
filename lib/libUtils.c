@@ -25,11 +25,11 @@ int _searchClient(pid_t *tabPid, int lenTabPid, pid_t pid){
     }
     return -1;
 }
-void addMemoryTab(pid_t **tabPid, int *lenTabPid, pid_t pid){
-    if(_searchClient(*tabPid,*lenTabPid,pid) == -1){
-        *lenTabPid += 1;
-        *tabPid = realloc(*tabPid,sizeof(pid_t)*(*lenTabPid));
-        (*tabPid)[ *lenTabPid-1] = pid;
+void addMemoryTab(pid_t **tabPid, int *pidTabLen, pid_t pid){
+    if(_searchClient(*tabPid,*pidTabLen,pid) == -1){
+        *pidTabLen += 1;
+        *tabPid = realloc(*tabPid,sizeof(pid_t)*(*pidTabLen));
+        (*tabPid)[ *pidTabLen-1] = pid;
     }
 }
 void eraseClient(pid_t **tabPid, int *lenTabPid, pid_t pid){

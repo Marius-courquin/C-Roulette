@@ -1,0 +1,1 @@
+#define STARTING_MONEY 1000

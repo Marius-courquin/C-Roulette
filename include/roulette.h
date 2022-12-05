@@ -1,4 +1,3 @@
-
 #include <unistd.h>
 #include <sys/shm.h>
 #include <stdio.h>

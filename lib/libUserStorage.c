@@ -1,5 +1,6 @@
 #include "../include/libUserStorage.h"
 
+
 FILE *openFile(char *fileName, char *mode){
     FILE *file = fopen(fileName, mode);
     if(file == NULL){
@@ -12,9 +13,11 @@ FILE *openFile(char *fileName, char *mode){
 int readUserInformation(char *name) {
     FILE *file = openFile(USER_STORAGE_PATH,"r");
     char line[256];
+    char *nameFromStorage;
+    char *moneyFromStorage;
     while(fgets(line, sizeof(line), file) != NULL) {
-        char *nameFromStorage = strtok(line, ":");
-        char *moneyFromStorage = strtok(NULL, ":");
+        nameFromStorage = strtok(line, ":");
+        moneyFromStorage = strtok(NULL, ":");
         moneyFromStorage[strlen(moneyFromStorage) - 1] = '\0';
         if (strcmp(nameFromStorage, name) == 0) {
             return atoi(moneyFromStorage);
@@ -28,8 +31,9 @@ int userAlreadyExist(char *name) {
     FILE *file = openFile(USER_STORAGE_PATH,"r");
 
     char line[256];
+    char *nameFromStorage;
     while(fgets(line, sizeof(line), file) != NULL) {
-        char *nameFromStorage = strtok(line, ":");
+        nameFromStorage = strtok(line, ":");
         if (strcmp(nameFromStorage, name) == 0) {
             return 1;
         }
@@ -48,12 +52,14 @@ void addUserInformation(char *name, int money) {
 
 void updateUserInformation(char *name, int money) {
     FILE *file = openFile(USER_STORAGE_PATH,"r");
-    FILE *tempFile = openFile("../userStorageTemp","w");
+    FILE *tempFile = openFile("userStorageTemp","w");
 
     char line[256];
+    char *nameFromStorage;
+    char *moneyFromStorage;
     while(fgets(line, sizeof(line), file) != NULL) {
-        char *nameFromStorage = strtok(line, ":");
-        char *moneyFromStorage = strtok(NULL, ":");
+        nameFromStorage = strtok(line, ":");
+        moneyFromStorage = strtok(NULL, ":");
         moneyFromStorage[strlen(moneyFromStorage) - 1] = '\0';
         if (strcmp(nameFromStorage, name) == 0) {
             fprintf(tempFile, "%s:%d\n", name, money);
@@ -65,16 +71,20 @@ void updateUserInformation(char *name, int money) {
     fclose(file);
     fclose(tempFile);
     remove(USER_STORAGE_PATH);
-    rename("../userStorageTemp", "../userStorage");
+    rename("userStorageTemp", USER_STORAGE_PATH);
 }
 
 int userOnboarding(char *name, int money) {
     if (userAlreadyExist(name) == 0) {
         addUserInformation(name, money);
+        return money;
     } else {
         int userActualMoney = readUserInformation(name);
         if (userActualMoney != -1) {
             return userActualMoney;
+        } else {
+            printf("Error while reading user information");
+            exit(EXIT_FAILURE);
         }
     }
 }

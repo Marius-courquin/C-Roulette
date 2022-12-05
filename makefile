@@ -4,7 +4,7 @@ SRC_DIR=src
 LIB_DIR=lib
 BIN_DIR=bin
 
-all : directory libUtils libSharedMemory libSemaphore libUserStorage server client
+all : directory libUtils libSharedMemory libSemaphore libUserStorage server libClient client
 
 directory :
 	mkdir -p $(OBJ_DIR) $(BIN_DIR)
@@ -32,6 +32,11 @@ libUserStorage.o : $(LIB_DIR)/libUserStorage.c
 libUserStorage : libUserStorage.o
 	ar rcs $(BIN_DIR)/libUserStorage.a -o $(OBJ_DIR)/libUserStorage.o
 
+libClient.o : $(LIB_DIR)/libClient.c
+	gcc -c $(LIB_DIR)/libClient.c  -o $(OBJ_DIR)/libClient.o
+libClient : libClient.o
+	ar rcs $(BIN_DIR)/libClient.a -o $(OBJ_DIR)/libClient.o
+
 server.o : $(SRC_DIR)/server.c
 	gcc -c $(SRC_DIR)/server.c -o $(OBJ_DIR)/server.o
 server : server.o 
@@ -40,7 +45,7 @@ server : server.o
 client.o : $(SRC_DIR)/client.c
 	gcc -c $(SRC_DIR)/client.c -o $(OBJ_DIR)/client.o
 client : client.o userStorage
-	gcc $(OBJ_DIR)/client.o -o $(BIN_DIR)/client -L$(BIN_DIR) -lUserStorage
+	gcc $(OBJ_DIR)/client.o -o $(BIN_DIR)/client -L$(BIN_DIR) -lUserStorage -lUtils -lSharedMemory -lSemaphore -lpthread -lClient
 
 cleanUserStorage :
 	rm -f userStorage

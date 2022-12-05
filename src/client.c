@@ -21,12 +21,11 @@
 int sharedMemoryId;
 serverData sharedMemoryContent;
 int clientMoney = 0;
-clientData client;
 sem_t *semResultDraw, *semStartBet, *semFile;
-betData *betList;
 int nbOfBetInProgress = 0;
 pthread_t betThread;
-
+clientData client;
+betData *betList;
 int main(int argc, char *argv[])
 {
     if (argc != 2)
@@ -70,44 +69,10 @@ void *clientSignalHandler(int signal, siginfo_t *info){
 
 
 
-void bet() {
-    betData newBet;
-    displayRouletteTable();
-    if (nbOfBetInProgress > 0) {
-        displayBetInProgress(betList, nbOfBetInProgress);
-    }
-    printf("Available money : %d$\n", client.money);
-    printf("What do you want to bet on ? ( END to stop the bet )\n");
-    newBet.bet = malloc(sizeof(char) * 100);
-    scanf("%s", newBet.bet);
-    printf("Bet : %s \n", newBet.bet);
-    if (strcmp(newBet.bet, "END") == 0) {
-        system("clear");
-        if (nbOfBetInProgress > 0) {
-            displayBetInProgress(betList, nbOfBetInProgress);
-        }
-        printf("End of the bet !\n");
-        printf("Waiting for the draw !\n");
-    } else {
-        printf("How much do you want to bet ?\n");
-        scanf("%d", &newBet.amount);
-        if (newBet.amount > client.money) {
-            system("clear");
-            printf("You don't have enough money to bet that much !\n");    
-            bet();
-        } else {
-            client.money -= newBet.amount;
-            betList = (betData*)realloc(betList, sizeof(betData) * (nbOfBetInProgress + 1));
-            betList[nbOfBetInProgress] = newBet;
-            nbOfBetInProgress++;
-            system("clear");
-            bet();
-        }
-    }
-}
+
 
 void *betThreadHandler(void *arg) {
-    bet();
+    bet(&client,&betList,&nbOfBetInProgress);
 }
 
 void displayBetInProgress(betData *betList, int betInProgress) {

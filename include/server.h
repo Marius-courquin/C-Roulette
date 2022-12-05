@@ -6,6 +6,8 @@
 
 #define WAIT_DRAW 10
 #define WAIT_BET 20
+#define WAIT_NEW_ROUND 10
+#define STATE_NEW_ROUND 3
 #define STATE_BET 1
 #define STATE_DRAW 2
 void*serverSignalHandler(int signal, siginfo_t *info);

@@ -26,7 +26,7 @@ sem_t *semResultDraw, *semStartBet, *semFile;
 
 int main(int argc, char *argv[]){
     serveurDatas.pid = getpid();
-    printf("mon pid est : %d\n",serveurDatas.pid);
+    printf("my pid is : %d\n",serveurDatas.pid);
     serveurDatas.nbClient = 0;
     sharedMemoryId = createSharedMemory();
     writeSharedMemory(serveurDatas,sharedMemoryId);
@@ -52,8 +52,8 @@ void*serverSignalHandler(int signal, siginfo_t *info){
             serveurDatas.nbClient++;
             if(isPartyStarted == 0){
                 isPartyStarted = 1;
-                partyState = STATE_BET;
-                alarm(WAIT_BET);
+                partyState = STATE_NEW_ROUND;
+                alarm(WAIT_NEW_ROUND);
             }
             break;
         case SIGUSR2:
@@ -63,7 +63,6 @@ void*serverSignalHandler(int signal, siginfo_t *info){
             writeSharedMemory(serveurDatas,sharedMemoryId);
             break;
         case SIGALRM:
-            printf("Time is up\n");
             runGame();
             break;
         default:
@@ -78,17 +77,25 @@ void runGame(){
     if(serveurDatas.nbClient == 0){
         isPartyStarted = 0;
     }
-    else if(partyState == STATE_BET){
+    else if(partyState == STATE_NEW_ROUND){
+        printf("New round, go to bet now\n");
+        partyState = STATE_BET;
         postStartBet(semStartBet, serveurDatas.nbClient);
+        alarm(WAIT_BET);
+    }
+    else if(partyState == STATE_BET){
+        printf("Time is up, go wait for the draw now\n");
         partyState = STATE_DRAW;
         alarm(WAIT_DRAW);
     }
     else if(partyState == STATE_DRAW){
+        printf("Time is up, we have the result now\n");
         srand(time(NULL));
         serveurDatas.resultNumber = rand()%37;
         writeSharedMemory(serveurDatas,sharedMemoryId);
         postDrawResult(semResultDraw ,serveurDatas.nbClient);
-        partyState = STATE_BET;
-        alarm(WAIT_BET);
+        partyState = STATE_NEW_ROUND;
+        alarm(WAIT_NEW_ROUND);
+
     }
 }

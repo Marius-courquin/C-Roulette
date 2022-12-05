@@ -25,6 +25,7 @@ int _searchClient(pid_t *tabPid, int lenTabPid, pid_t pid){
     }
     return -1;
 }
+
 void addMemoryTab(pid_t **tabPid, int *pidTabLen, pid_t pid){
     if(_searchClient(*tabPid,*pidTabLen,pid) == -1){
         *pidTabLen += 1;
@@ -32,6 +33,7 @@ void addMemoryTab(pid_t **tabPid, int *pidTabLen, pid_t pid){
         (*tabPid)[ *pidTabLen-1] = pid;
     }
 }
+
 void eraseClient(pid_t **tabPid, int *lenTabPid, pid_t pid){
     int i = _searchClient(*tabPid,*lenTabPid,pid);
     if(i == -1){
@@ -41,11 +43,11 @@ void eraseClient(pid_t **tabPid, int *lenTabPid, pid_t pid){
     for(i; i < *lenTabPid; i++){
         *tabPid[i] = *tabPid[i+1];
     }
-    *tabPid = realloc(*tabPid,sizeof(pid_t)*(*lenTabPid));
+    *tabPid = realloc(*tabPid, sizeof(pid_t)*(*lenTabPid));
 }
 
 void killAllClient(pid_t *tabPid, int lenTabPid){
     for(int i = 0; i <  lenTabPid; i++){
-        kill(tabPid[i],SIGKILL);
+        kill(tabPid[i], SIGKILL);
     }
 }

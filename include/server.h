@@ -11,5 +11,4 @@
 #define STATE_BET 1
 #define STATE_DRAW 2
 void*serverSignalHandler(int signal, siginfo_t *info);
-void initSignalHandler();
 void runGame();

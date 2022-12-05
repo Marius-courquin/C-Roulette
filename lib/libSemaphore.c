@@ -9,7 +9,7 @@
 void initAllSemaphore(sem_t **semResultDraw, sem_t **semStartBet, sem_t** semFile){
     *semResultDraw = sem_open(SEMAPHORE_DRAW_RESULT, O_CREAT, 0666, 0);
     *semStartBet = sem_open(SEMAPHORE_START_BET, O_CREAT, 0666, 0);
-    *semFile = sem_open(SEMAPHORE_FILE, O_CREAT, 0666, 0);
+    *semFile = sem_open(SEMAPHORE_FILE, O_CREAT, 0666, 1);
 }
 
 //only for Clients

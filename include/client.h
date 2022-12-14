@@ -26,6 +26,8 @@ typedef struct {
     int amount;
 } betData;
 
+
+
 void *clientSignalHandler(int signal, siginfo_t *info);
 void bet();
 void *betThreadHandler(void *arg);

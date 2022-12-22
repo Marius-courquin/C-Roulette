@@ -3,6 +3,7 @@
 #define ROULETTE 1
 #endif
 
+
 #define STARTING_MONEY 1000
 
 #define BLCK   "\x1B[30m"
@@ -24,6 +25,7 @@ typedef struct {
 typedef struct {
     char *bet;
     int amount;
+    int multiplicator;
 } betData;
 
 
@@ -31,7 +33,4 @@ typedef struct {
 void *clientSignalHandler(int signal, siginfo_t *info);
 void bet();
 void *betThreadHandler(void *arg);
-void displayBetInProgress();
-
-
-
+void *resultThreadHandler(void *arg);

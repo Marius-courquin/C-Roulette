@@ -9,3 +9,4 @@ void addMemoryTab(pid_t **tabPid, int *pidTabLen,pid_t pid);
 void eraseClient(pid_t **tabPid, int *pidTabLen,pid_t pid);
 void killAllClient(pid_t *tabPid, int pidTabLen);
 int _searchClient(pid_t *tabPid, int pidTabLen, pid_t pid);
+void clearTerminal();

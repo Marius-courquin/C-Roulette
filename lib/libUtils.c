@@ -51,3 +51,7 @@ void killAllClient(pid_t *tabPid, int lenTabPid){
         kill(tabPid[i], SIGKILL);
     }
 }
+
+void clearTerminal(){
+    system("clear");
+}

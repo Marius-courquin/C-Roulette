@@ -1,0 +1,15 @@
+name: C-ROULETTE CI/CD
+
+on:
+  pull_request: {}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Testing to build project with make
+      run: make
+    - name: Testing to clean the project with make clean
+      run: make clean

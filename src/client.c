@@ -67,10 +67,6 @@ void *clientSignalHandler(int signal, siginfo_t *info){
     return NULL;
 }
 
-
-
-
-
 void *betThreadHandler(void *arg) {
     bet(&client,&betList,&nbOfBetInProgress);
 }

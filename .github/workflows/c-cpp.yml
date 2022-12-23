@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repository content
+      uses: actions/checkout@v2
     - name: Testing to build project with make
       run: make
     - name: Testing to clean the project with make clean

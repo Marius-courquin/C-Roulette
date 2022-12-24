@@ -78,19 +78,25 @@ void *betThreadHandler(void *arg) {
     sem_wait(semStartBet);
     clearTerminal();
     bet(&client,&betList,&nbOfBetInProgress);
-    while(getResultReceived() == 0);
-    pthread_cond_signal(&endOfBetCondition);
+   // while(getResultReceived() == 0);
+    //pthread_cond_signal(&endOfBetCondition);
 }
 
 void *resultThreadHandler(void *arg) {
-    sem_wait(semResultDraw);
-    drawResultReceived();
-    pthread_cond_wait(&endOfBetCondition, &endOfBetMutex);
-    printf("The game is over, nothing is right !\n");
-    printf("Let's check the result !\n");
-    printf("Drum roll ...\n");
-    sleep(2);
-    sharedMemoryContent = readSharedMemory(sharedMemoryId);
-    displayBetResult(sharedMemoryContent.resultNumber);
-    //checkBetResult(sharedMemoryContent.resultNumber, &client, &betList, &nbOfBetInProgress);
+    while(1){
+        sem_wait(semResultDraw);
+        pthread_cancel(betThread);
+        //drawResultReceived();
+       // pthread_cond_wait(&endOfBetCondition, &endOfBetMutex);
+        clearTerminal();
+        printf("The game is over, nothing is right !\n");
+        printf("Let's check the result !\n");
+        printf("Drum roll ...\n");
+        sleep(2);
+        sharedMemoryContent = readSharedMemory(sharedMemoryId);
+        displayBetResult(sharedMemoryContent.resultNumber);
+        sleep(2);
+        pthread_create(&betThread, NULL, betThreadHandler, NULL);
+        //checkBetResult(sharedMemoryContent.resultNumber, &client, &betList, &nbOfBetInProgress);
+    }
 }

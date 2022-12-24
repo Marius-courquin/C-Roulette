@@ -143,32 +143,19 @@ betting :
         printf("End of the bet !\n");
         printf("Waiting for the draw !\n");
     }
-    else if (resultReceived == 1) {
-        clearTerminal();
-        printf("Too late ! The draw is already done !\n");
-    }
     else if(checkBetValue(userInput, &multiplicator) == -1){
         clearTerminal();
         printf("Invalid bet !\n");
-        if (resultReceived == 1) {
-            resultReceived = 0;
-            printf("End of the bet ! Let's see the result !\n");
-        } else {
-            goto betting;
-        }
+        goto betting;
+        
     }
     else {
-        if (resultReceived == 1) {
-            resultReceived = 0;
-            printf("Too late ! The draw is already done !\n");
-        } else {
-            int money = inputBet(client);
-            addNewBet(betList,nbOfBetInProgress, money, userInput, multiplicator);
-            clearTerminal();
-            updateUserInformation(client->name, client->money);
-            goto betting;
-        }   
-    }
+        int money = inputBet(client);
+        addNewBet(betList,nbOfBetInProgress, money, userInput, multiplicator);
+        clearTerminal();
+        updateUserInformation(client->name, client->money);
+        goto betting;
+    }  
 
 }
 

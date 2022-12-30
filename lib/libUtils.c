@@ -43,9 +43,7 @@ void eraseClient(pid_t **tabPid, int *lenTabPid, pid_t pid){
     for(i; i < *lenTabPid; i++){
         (*tabPid)[i] = (*tabPid)[i+1];
     }
-    printf("ok we changed the tab : %d\n",*lenTabPid);
     *tabPid = realloc(*tabPid, sizeof(pid_t)*(*lenTabPid));
-    printf("successful realloc\n");
 }
 
 void killAllClient(pid_t *tabPid, int lenTabPid){

@@ -14,7 +14,13 @@ Follow the instructions below to manage or run the game.
 ```sh
 ./player "yourname"
 ```
-## Reset the game
+## Reset the users data
 ```sh
-make clean
+make reset
 ```
+
+# Improvements
+- [ ] Add interaction to the dealer
+- [ ] Add user identification to avoid multiple connections
+- [ ] Add a way to manage game's settings
+- [ ] ...

@@ -251,6 +251,10 @@ int computeGain(int drawResult,betData *betList,int arrayLen){
     }
     if(gain > 0)
         printf("The total gain is : "GRN"%d$\n"RESET"",gain);
+    else if(arrayLen == 0) {
+        printf("You have not bet this round !\n");
+        printf(RED"NO BET = NO GAIN ! \n"RESET);
+    }
     else
         printf(""RED"You lost !\n"RESET"");
     return gain;
@@ -268,7 +272,7 @@ void displayBetInProgress(betData *betList, int betInProgress) {
 
 void writeBestBet(int gain, char *username){
     serverData sharedMemoryContent = readSharedMemory(sharedMemoryId);
-    if(sharedMemoryContent.client.gain < gain){
+    if(gain > 0 && sharedMemoryContent.client.gain < gain){
         sharedMemoryContent.client.gain = gain;
         strcpy(sharedMemoryContent.client.username,username);
         writeSharedMemory(sharedMemoryContent,sharedMemoryId);
@@ -277,7 +281,8 @@ void writeBestBet(int gain, char *username){
 
 void displayBestBet(){
     serverData sharedMemoryContent = readSharedMemory(sharedMemoryId);
-    printf("Best bet : "GRN" %s "RESET" with "RED"%d$ "RESET" \n",sharedMemoryContent.client.username,sharedMemoryContent.client.gain);
+    if (sharedMemoryContent.client.gain > 0)
+        printf("Best bet : "GRN" %s "RESET" with "RED"%d$ "RESET" \n",sharedMemoryContent.client.username,sharedMemoryContent.client.gain);
 }
 
 void displayBetResult (int result) {

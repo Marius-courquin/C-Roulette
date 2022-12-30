@@ -10,13 +10,13 @@
 #include <string.h>
 #include <sys/types.h>
 #include <semaphore.h>
-#include <pthread.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include "../include/libUserStorage.h"
 #include "../include/libSharedMemory.h"
-#include "../include/libUtils.h"
 #include "../include/libSemaphore.h"
 #include "../include/libClient.h"
+#include "../include/libUtils.h"
 
 int sharedMemoryId;
 serverData sharedMemoryContent;
@@ -24,8 +24,13 @@ int clientMoney = 0;
 sem_t *semResultDraw, *semStartBet, *semFile;
 int nbOfBetInProgress = 0;
 pthread_t betThread;
+pthread_t resultThread;
 clientData client;
 betData *betList;
+char *clientName;
+pthread_mutex_t endOfBetMutex = PTHREAD_MUTEX_INITIALIZER ;
+pthread_cond_t endOfBetCondition = PTHREAD_COND_INITIALIZER;
+
 int main(int argc, char *argv[])
 {
     if (argc != 2)
@@ -38,7 +43,9 @@ int main(int argc, char *argv[])
     printf("Welcome %s to the C-Roulette Game !\n", argv[1]);
     openAllSemaphore(&semResultDraw, &semStartBet, &semFile);
     sem_wait(semFile);
-    client.money = userOnboarding(argv[1], STARTING_MONEY);
+    clientName = malloc(sizeof(char) * strlen(argv[1]));
+    strcpy(clientName, argv[1]);
+    client.money = userOnboarding(clientName, STARTING_MONEY);
     sem_post(semFile);
     printf("You have %d$ to play with !\n", client.money);
     sharedMemoryId = createSharedMemory();
@@ -46,6 +53,7 @@ int main(int argc, char *argv[])
     kill(sharedMemoryContent.pid, SIGUSR1);
     initSignalHandler(clientSignalHandler);
     pthread_create(&betThread, NULL, betThreadHandler, NULL);
+    pthread_create(&resultThread, NULL, resultThreadHandler, NULL);
     while(1);
     return 0;
 }
@@ -67,18 +75,33 @@ void *clientSignalHandler(int signal, siginfo_t *info){
     return NULL;
 }
 
-
-
-
-
-void *betThreadHandler(void *arg) {
+void *betThreadHandler(void *arg) { 
+    sem_wait(semFile);
+    client.money = userOnboarding(clientName, STARTING_MONEY);
+    sem_post(semFile);
+    printf("Waiting for the bet to start ...\n");
+    sem_wait(semStartBet);
+    clearTerminal();
     bet(&client,&betList,&nbOfBetInProgress);
 }
 
-void displayBetInProgress(betData *betList, int betInProgress) {
-    printf("Bet in progress : ");
-    for (int i = 0; i < betInProgress; i++) {
-        printf("%d. %d$ on %s   ", i + 1, betList[i].amount, betList[i].bet);
+void *resultThreadHandler(void *arg) {
+    int gain = 0;
+    while(1){
+        sem_wait(semResultDraw);
+        pthread_cancel(betThread);
+        clearTerminal();
+        printf("Let's check the result !\n");
+        printf("Drum roll ...\n");
+        sleep(2);
+        sharedMemoryContent = readSharedMemory(sharedMemoryId);
+        displayBetResult(sharedMemoryContent.resultNumber);
+        gain = computeGain(sharedMemoryContent.resultNumber,betList,nbOfBetInProgress);
+        updateUserInformation(client.name, client.money + gain);
+        if(nbOfBetInProgress > 0){
+            free(betList);
+            nbOfBetInProgress = 0;
+        }
+        pthread_create(&betThread, NULL, betThreadHandler, NULL);
     }
-    printf("\n");
 }

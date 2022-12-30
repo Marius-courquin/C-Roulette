@@ -1,10 +1,12 @@
 #include "../include/libClient.h"
 #include "../include/libUtils.h"
 #include "../include/libUserStorage.h"
+#include "../include/libSharedMemory.h"
 #include <string.h>
 
 
-int resultReceived = 0;
+extern int sharedMemoryId;
+
 
 void displayRouletteTable(){
     printf("----------------------------------------------------------------------\n");   
@@ -147,12 +149,16 @@ int checkComposition(int betTab[],int compositionCount, int *multiplicator){
         else
             return -1;  
 }
-
+void displayUserInGame(){
+    serverData sharedMemoryContent = readSharedMemory(sharedMemoryId);
+    printf("User In Game : %d\n",sharedMemoryContent.nbClient);
+}
 void bet(clientData *client,betData **betList, int *nbOfBetInProgress ) {
     betData newBet;
     char userInput[20];
     int multiplicator = 0;
 betting :
+    displayUserInGame();
     displayRouletteTable();
     printf("Available money : %d$\n", client->money);
     displayBetInProgress(*betList, *nbOfBetInProgress);
@@ -240,11 +246,14 @@ int computeGain(int drawResult,betData *betList,int arrayLen){
             }
         }
         if(flagWin == 1){
-            printf("You won %d$ on %s\n",betList[i].amount * betList[i].multiplicator,betList[i].bet);
+            printf("You won "GRN"%d$ "RESET" on "RED"%s"RESET"\n",betList[i].amount * betList[i].multiplicator,betList[i].bet);
             flagWin = 0;
         }
     }
-    printf("The total gain is : %d$\n",gain);
+    if(gain > 0)
+        printf("The total gain is : "GRN"%d$\n"RESET"",gain);
+    else
+        printf(""RED"You lost !\n"RESET"");
     return gain;
 }
 
@@ -258,33 +267,19 @@ void displayBetInProgress(betData *betList, int betInProgress) {
     }
 }
 
-void drawResultReceived() {
-    resultReceived = 1;
+void writeBestBet(int gain, char *username){
+    serverData sharedMemoryContent = readSharedMemory(sharedMemoryId);
+    if(sharedMemoryContent.client.gain < gain){
+        sharedMemoryContent.client.gain = gain;
+        strcpy(sharedMemoryContent.client.username,username);
+        writeSharedMemory(sharedMemoryContent,sharedMemoryId);
+    }
 }
 
-int getResultReceived() {
-    return resultReceived;
+void displayBestBet(){
+    serverData sharedMemoryContent = readSharedMemory(sharedMemoryId);
+    printf("Best bet : "GRN" %s "RESET" with "RED"%d$ "RESET" \n",sharedMemoryContent.client.username,sharedMemoryContent.client.gain);
 }
-
-// void checkBetResult(int *drawResult, betData *betList, int *nbOfBetInProgress, clientData *client) {
-//     if (resultReceived == 1) {
-//         for (int i = 0; i < *nbOfBetInProgress; i++) {
-//             if (isDigit(betList[i].bet)) {
-//                 if (atoi(betList[i].bet) == *drawResult) {
-//                     client->money += betList[i].amount * betList[i].multiplicator;
-//                 }
-//             } else {
-//                 if (checkBetValue(betList[i].bet, &betList[i].multiplicator) == 1) {
-//                     client->money += betList[i].amount * betList[i].multiplicator;
-//                 }
-//             }
-//         }
-//         updateUserInformation(client->name, client->money);
-//         free(betList);
-//         *nbOfBetInProgress = 0;
-//         resultReceived = 0;
-//     }
-// }
 
 void displayBetResult (int result) {
     if(checkIfResultIsRed(result) == 1) {

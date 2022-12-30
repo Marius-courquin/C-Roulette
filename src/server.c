@@ -49,6 +49,7 @@ void*serverSignalHandler(int signal, siginfo_t *info){
             printf("new Client , pid : %d\n", info->si_pid);
             addMemoryTab(&tabPid, &pidTabLen, info->si_pid);
             serveurDatas.nbClient++;
+            writeSharedMemory(serveurDatas, sharedMemoryId);
             if(isPartyStarted == 0){
                 isPartyStarted = 1;
                 partyState = STATE_NEW_ROUND;
@@ -90,7 +91,9 @@ void runGame(){
     else if(partyState == STATE_DRAW){
         printf("Time is up, we have the result now\n");
         srand(time(NULL));
-        serveurDatas.resultNumber = 1;//rand()%37;
+        serveurDatas.client.gain = -1;
+        serveurDatas.client.username[0] = '\0';
+        serveurDatas.resultNumber = rand()%37;
         printf("the value is %d\n",serveurDatas.resultNumber);
         writeSharedMemory(serveurDatas, sharedMemoryId);
         postDrawResult(semResultDraw ,serveurDatas.nbClient);

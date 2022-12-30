@@ -61,8 +61,6 @@ void addNewBet(betData **betList, int *nbOfBetInProgress,int amount, char *bet, 
 int inputBet(clientData *client) ;
 int containSeparatorField(char *str, char separator);
 void displayBetInProgress(betData *betList, int betInProgress);
-void drawResultReceived();
-int getResultReceived();
 void checkBetResult(int *drawResult, betData *betList, int *nbOfBetInProgress, clientData *client);
 void displayBetResult (int result);
 int checkIfResultIsRed(int result);
@@ -80,7 +78,9 @@ int checkResultOdd(int result);
 int decomposition(int *result,int *compositionCount,char *string);
 int computeGain(int drawResult,betData *betList,int arrayLen);
 int checkDigitOnly(char *str);
-
+void displayUserInGame();
+void writeBestBet(int gain, char *username);
+void displayBestBet();
 static func functionsArray[12] = {
     &checkResult2to1,
     &checkResult2to2,

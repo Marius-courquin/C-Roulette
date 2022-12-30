@@ -27,7 +27,7 @@ pthread_t betThread;
 pthread_t resultThread;
 clientData client;
 betData *betList;
-
+char *clientName;
 pthread_mutex_t endOfBetMutex = PTHREAD_MUTEX_INITIALIZER ;
 pthread_cond_t endOfBetCondition = PTHREAD_COND_INITIALIZER;
 
@@ -43,7 +43,9 @@ int main(int argc, char *argv[])
     printf("Welcome %s to the C-Roulette Game !\n", argv[1]);
     openAllSemaphore(&semResultDraw, &semStartBet, &semFile);
     sem_wait(semFile);
-    client.money = userOnboarding(argv[1], STARTING_MONEY);
+    clientName = malloc(sizeof(char) * strlen(argv[1]));
+    strcpy(clientName, argv[1]);
+    client.money = userOnboarding(clientName, STARTING_MONEY);
     sem_post(semFile);
     printf("You have %d$ to play with !\n", client.money);
     sharedMemoryId = createSharedMemory();
@@ -74,29 +76,32 @@ void *clientSignalHandler(int signal, siginfo_t *info){
 }
 
 void *betThreadHandler(void *arg) { 
+    sem_wait(semFile);
+    client.money = userOnboarding(clientName, STARTING_MONEY);
+    sem_post(semFile);
     printf("Waiting for the bet to start ...\n");
     sem_wait(semStartBet);
     clearTerminal();
     bet(&client,&betList,&nbOfBetInProgress);
-   // while(getResultReceived() == 0);
-    //pthread_cond_signal(&endOfBetCondition);
 }
 
 void *resultThreadHandler(void *arg) {
+    int gain = 0;
     while(1){
         sem_wait(semResultDraw);
         pthread_cancel(betThread);
-        //drawResultReceived();
-       // pthread_cond_wait(&endOfBetCondition, &endOfBetMutex);
         clearTerminal();
-        printf("The game is over, nothing is right !\n");
         printf("Let's check the result !\n");
         printf("Drum roll ...\n");
         sleep(2);
         sharedMemoryContent = readSharedMemory(sharedMemoryId);
         displayBetResult(sharedMemoryContent.resultNumber);
-        sleep(2);
+        gain = computeGain(sharedMemoryContent.resultNumber,betList,nbOfBetInProgress);
+        updateUserInformation(client.name, client.money + gain);
+        if(nbOfBetInProgress > 0){
+            free(betList);
+            nbOfBetInProgress = 0;
+        }
         pthread_create(&betThread, NULL, betThreadHandler, NULL);
-        //checkBetResult(sharedMemoryContent.resultNumber, &client, &betList, &nbOfBetInProgress);
     }
 }

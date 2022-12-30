@@ -9,20 +9,7 @@
 #endif
 
 
-static char betType[12][7] = {
-    "2TO1",
-    "2TO2",
-    "2TO3",
-    "1st12",
-    "2nd12",
-    "3rd12",
-    "1TO18",
-    "EVEN",
-    "RED",
-    "BLACK",
-    "ODD",
-    "19TO36"
-};
+
 
 static int betTypeMultiplicator [12] = {
     3,
@@ -47,6 +34,25 @@ static int redNumbers[18] = {
     1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
 };
 
+static char betType[12][7] = {
+    "2TO1",
+    "2TO2",
+    "2TO3",
+    "1st12",
+    "2nd12",
+    "3rd12",
+    "1TO18",
+    "EVEN",
+    "RED",
+    "BLACK",
+    "ODD",
+    "19TO36"
+};
+
+typedef int (*func)(int);
+
+
+
 void displayRouletteTable();
 int checkComposition(int betTab[],int compositionCount, int *multiplicator);
 int checkBetValue(char *string, int *multiplicator);
@@ -61,3 +67,31 @@ void checkBetResult(int *drawResult, betData *betList, int *nbOfBetInProgress, c
 void displayBetResult (int result);
 int checkIfResultIsRed(int result);
 int checkIfResultIsBlack(int result);
+int checkResult2to1 (int result);
+int checkResult2to2 (int result);
+int checkResult2to3 (int result);
+int checkResult1st12(int result);
+int checkResult2nd12(int result);
+int checkResult3rd12(int result);
+int checkResult1to18 (int result);
+int checkResult19to36 (int result);
+int checkResultEven(int result);
+int checkResultOdd(int result);
+int decomposition(int *result,int *compositionCount,char *string);
+int computeGain(int drawResult,betData *betList,int arrayLen);
+int checkDigitOnly(char *str);
+
+static func functionsArray[12] = {
+    &checkResult2to1,
+    &checkResult2to2,
+    &checkResult2to3,
+    &checkResult1st12,
+    &checkResult2nd12,
+    &checkResult3rd12,
+    &checkResult1to18,
+    &checkResultOdd,
+    &checkIfResultIsRed,
+    &checkIfResultIsBlack,
+    &checkResultEven,
+    &checkResult19to36
+};

@@ -23,7 +23,7 @@ typedef struct {
 } clientData ;
 
 typedef struct {
-    char *bet;
+    char bet[7];
     int amount;
     int multiplicator;
 } betData;

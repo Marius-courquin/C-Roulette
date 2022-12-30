@@ -28,10 +28,17 @@ int containSeparatorField(char *str, char separator){
     }
     return 0;
 }
+int checkDigitOnly(char *str){
+    for(int i = 0; i < strlen(str); i++){
+        if(str[i] < '0' || str[i] > '9'){
+            return 0;
+        }
+    }
+    return 1;
+}
+
 int checkBetValue(char *string, int *multiplicator){
-    char *token;
     int result;
-    
     if (containSeparatorField(string, ':') == 0) {
         for(int i = 0; i < 12; i++){
             if(strcmp(string, betType[i]) == 0) {
@@ -39,42 +46,58 @@ int checkBetValue(char *string, int *multiplicator){
                 return 1;
             }
         }
+        if(checkDigitOnly(string) == 0)
+            return -1;
         result = atoi(string);
         if(result == 0){
             if(strcmp(string, "0") == 0){
                 *multiplicator = 36;
                 return 1;
             }
-            return -1;
+            else
+                return -1;
         }
         if(result >= 0 && result <= 36) {
             *multiplicator = 36;
             return 1;
         }
-        return -1;
+        else
+            return -1;
     }
     else{ //if token is a composition of 2 to 6 values
-        token = strtok(string, ":");
         int compositionCount = 0;
         int result[6];
-        while(token != NULL){
-            result[compositionCount] = atoi(token);
-            if(result[compositionCount] == 0){ //possible error
-                if(strcmp(token, "0") == 0) //ok it's a 0
-                    result[compositionCount] =  0;
-                else //error
-                    return -1;
-                
-            }
-            if(result[compositionCount] < 0 && result[compositionCount] > 36)
-                return -1;
-            token = strtok(NULL, ":");
-            compositionCount++;
-        }
-        return checkComposition(result, compositionCount, multiplicator);
+        if(decomposition(result,&compositionCount,string) == -1)
+            return -1;
+        else
+            return checkComposition(result, compositionCount, multiplicator);
     }
 }
+int decomposition(int *result,int *compositionCount,char *string){
+    char stringCopy[strlen(string)];
+    strcpy(stringCopy, string);
+    char *token = strtok(stringCopy, ":");
+    while(token != NULL){
+        if(checkDigitOnly(token) == 0)
+            return -1;
+        result[*compositionCount] = atoi(token);
+        if(result[*compositionCount] == 0){ //possible error
+            if(strcmp(token, "0") == 0) //ok it's a 0
+                result[*compositionCount] =  0;
+            else //error
+                return -1;
+            
+        }
+        if(result[*compositionCount] < 0 && result[*compositionCount] > 36){
+            *compositionCount = -1;
+            return -1;
 
+        }
+        token = strtok(NULL, ":");
+        *compositionCount+=1;
+    }
+    return 1;
+}
 int checkComposition(int betTab[],int compositionCount, int *multiplicator){
             if(compositionCount >= 2 && compositionCount <= 4 || compositionCount == 6){
                 switch(compositionCount){
@@ -150,6 +173,7 @@ betting :
         
     }
     else {
+        printf("le bet est : %s\n", userInput);
         int money = inputBet(client);
         addNewBet(betList,nbOfBetInProgress, money, userInput, multiplicator);
         clearTerminal();
@@ -178,17 +202,51 @@ moneyInput :
 
 void addNewBet(betData **betList, int *nbOfBetInProgress,int amount, char *bet, int multiplicator) {
     *betList = (betData*)realloc(*betList, sizeof(betData) * (*nbOfBetInProgress + 1));
-    betList[*nbOfBetInProgress]->amount = amount;
-    betList[*nbOfBetInProgress]->bet = bet;
-    betList[*nbOfBetInProgress]->multiplicator = multiplicator;
+    (*betList)[*nbOfBetInProgress].amount = amount;
+    strcpy((*betList)[*nbOfBetInProgress].bet,bet); ;
+    (*betList)[*nbOfBetInProgress].multiplicator = multiplicator;
     *nbOfBetInProgress = *nbOfBetInProgress + 1;
 }
-/**
-int computeGain(int drawResult,betData *betList,int lenTab){
-    for(int i =  0; i < lenTab;i++){
-        if(isDigit(betList[i].bet))
+
+int computeGain(int drawResult,betData *betList,int arrayLen){
+    int gain = 0;
+    int composition[6];
+    int compositionLen = 0;
+    int flagWin = 0;
+    for(int i =  0; i < arrayLen;i++){
+        for(int j = 0; j < 12; j++){
+            if(strcmp(betList[i].bet, betType[j]) == 0){
+                if (functionsArray[j](drawResult) == 1){
+                    gain += betList[i].amount * betList[i].multiplicator;
+                    flagWin = 1;
+                    break;
+                }
+            }
+        }
+        decomposition(composition,&compositionLen,betList[i].bet);
+        if(compositionLen > 0){
+            for(int k = 0; k < compositionLen; k++){
+                if(composition[k] == drawResult){
+                    gain += betList[i].amount * betList[i].multiplicator;
+                    flagWin = 1;
+                    break;
+                }
+            }
+        }
+        else{
+            if(atoi(betList[i].bet) == drawResult){
+                gain += betList[i].amount * betList[i].multiplicator;
+                flagWin = 1;
+            }
+        }
+        if(flagWin == 1){
+            printf("You won %d$ on %s\n",betList[i].amount * betList[i].multiplicator,betList[i].bet);
+            flagWin = 0;
+        }
     }
-}*/
+    printf("The total gain is : %d$\n",gain);
+    return gain;
+}
 
 void displayBetInProgress(betData *betList, int betInProgress) {
     if (betInProgress > 0) {
@@ -256,4 +314,70 @@ int checkIfResultIsBlack(int result) {
         }
     }
     return 0;
+}
+
+int checkResult1to18 (int result){
+    for(int i = 0; i <= 18 ; i++){
+        if (i == result)
+            return 1;
+    }
+    return 0;
+}
+int checkResult19to36 (int result){
+    for(int i = 19; i <= 36 ; i++){
+        if (i == result)
+            return 1;
+    }
+    return 0;
+}
+int checkResult2to1 (int result) {
+    for(int i = 3; i <= 36 ; i+=2){
+        if (i == result)
+            return 1;
+    }
+    return 0;
+}
+int checkResult2to2(int result) {
+    for(int i = 2; i <= 35 ; i+=2){
+        if (i == result)
+            return 1;
+    }
+    return 0;
+}
+int checkResult2to3(int result) {
+    for(int i = 1; i <= 34 ; i+=2){
+        if (i == result)
+            return 1;
+    }
+    return 0;
+}
+int checkResult1st12(int result){
+    for(int i = 0; i <= 12 ; i++){
+        if (i == result)
+            return 1;  
+    }
+}
+int checkResult2nd12(int result){
+    for(int i = 13; i <= 24 ; i++){
+        if (i == result)
+            return 1;  
+    }
+}
+int checkResult3rd12(int result){
+    for(int i = 25; i <= 36 ; i++){
+        if (i == result)
+            return 1;  
+    }
+}
+int checkResultEven(int result){
+    if(result % 2 == 0)
+        return 1;
+    else
+        return 0;
+}
+int checkResultOdd(int result){;
+    if(result % 2 != 0)
+        return 1;
+    else
+        return 0;
 }

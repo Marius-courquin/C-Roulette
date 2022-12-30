@@ -90,7 +90,7 @@ void runGame(){
     else if(partyState == STATE_DRAW){
         printf("Time is up, we have the result now\n");
         srand(time(NULL));
-        serveurDatas.resultNumber = rand()%37;
+        serveurDatas.resultNumber = 1;//rand()%37;
         printf("the value is %d\n",serveurDatas.resultNumber);
         writeSharedMemory(serveurDatas, sharedMemoryId);
         postDrawResult(semResultDraw ,serveurDatas.nbClient);

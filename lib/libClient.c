@@ -179,7 +179,6 @@ betting :
         
     }
     else {
-        printf("le bet est : %s\n", userInput);
         int money = inputBet(client);
         addNewBet(betList,nbOfBetInProgress, money, userInput, multiplicator);
         clearTerminal();

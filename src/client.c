@@ -27,7 +27,6 @@ pthread_t betThread;
 pthread_t resultThread;
 clientData client;
 betData *betList;
-char *clientName;
 pthread_mutex_t endOfBetMutex = PTHREAD_MUTEX_INITIALIZER ;
 pthread_cond_t endOfBetCondition = PTHREAD_COND_INITIALIZER;
 
@@ -43,9 +42,7 @@ int main(int argc, char *argv[])
     printf("Welcome %s to the C-Roulette Game !\n", argv[1]);
     openAllSemaphore(&semResultDraw, &semStartBet, &semFile);
     sem_wait(semFile);
-    clientName = malloc(sizeof(char) * strlen(argv[1]));
-    strcpy(clientName, argv[1]);
-    client.money = userOnboarding(clientName, STARTING_MONEY);
+    client.money = userOnboarding(client.name, STARTING_MONEY);
     sem_post(semFile);
     printf("You have %d$ to play with !\n", client.money);
     sharedMemoryId = createSharedMemory();
@@ -77,7 +74,7 @@ void *clientSignalHandler(int signal, siginfo_t *info){
 
 void *betThreadHandler(void *arg) { 
     sem_wait(semFile);
-    client.money = userOnboarding(clientName, STARTING_MONEY);
+    client.money = userOnboarding(client.name, STARTING_MONEY);
     sem_post(semFile);
     printf("Waiting for the bet to start ...\n");
     sem_wait(semStartBet);
@@ -93,11 +90,17 @@ void *resultThreadHandler(void *arg) {
         clearTerminal();
         printf("Let's check the result !\n");
         printf("Drum roll ...\n");
-        sleep(2);
+        sleep(1);
         sharedMemoryContent = readSharedMemory(sharedMemoryId);
         displayBetResult(sharedMemoryContent.resultNumber);
         gain = computeGain(sharedMemoryContent.resultNumber,betList,nbOfBetInProgress);
+        writeBestBet(gain,client.name);
+
+        sem_wait(semFile);
         updateUserInformation(client.name, client.money + gain);
+        sem_post(semFile);
+        
+        displayBestBet();
         if(nbOfBetInProgress > 0){
             free(betList);
             nbOfBetInProgress = 0;

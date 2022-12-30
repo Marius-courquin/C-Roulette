@@ -9,7 +9,13 @@
 #define SEMAPHORE_FILE "roulette-file"
 
 typedef struct {
+    char username[20];
+    int gain;
+} bestClient;
+
+typedef struct {
     int resultNumber;
     pid_t pid;
     int nbClient;
+    bestClient client;
 } serverData;

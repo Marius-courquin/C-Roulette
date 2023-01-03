@@ -56,7 +56,7 @@ typedef int (*func)(int);
 void displayRouletteTable();
 int checkComposition(int betTab[],int compositionCount, int *multiplicator);
 int checkBetValue(char *string, int *multiplicator);
-void bet(clientData *client,betData **betList, int *nbOfBetInProgress );
+int bet(clientData *client,betData **betList, int *nbOfBetInProgress );
 void addNewBet(betData **betList, int *nbOfBetInProgress,int amount, char *bet, int multiplicator);
 int inputBet(clientData *client) ;
 int containSeparatorField(char *str, char separator);

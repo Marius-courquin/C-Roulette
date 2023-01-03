@@ -23,7 +23,7 @@ typedef struct {
 } clientData ;
 
 typedef struct {
-    char bet[7];
+    char bet[20];
     int amount;
     int multiplicator;
 } betData;
@@ -31,6 +31,6 @@ typedef struct {
 
 
 void *clientSignalHandler(int signal, siginfo_t *info);
-void bet();
 void *betThreadHandler(void *arg);
 void *resultThreadHandler(void *arg);
+void clientExit();

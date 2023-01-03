@@ -6,7 +6,7 @@ BIN_DIR=bin
 
 all : directory libUtils libSharedMemory libSemaphore libUserStorage server libClient client
 
-reset : cleanUserStorage
+reset : cleanUserStorage userStorage
 
 directory :
 	mkdir -p $(OBJ_DIR) $(BIN_DIR)

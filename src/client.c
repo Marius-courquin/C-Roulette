@@ -58,11 +58,8 @@ int main(int argc, char *argv[])
 void *clientSignalHandler(int signal, siginfo_t *info){
     switch(signal){
         case SIGINT:
-            printf("Client is shutting down !\n");
-            sem_wait(semFile);
-            updateUserInformation(client.name, client.money);
-            sem_post(semFile);
-            kill(sharedMemoryContent.pid, SIGUSR2);
+            printf("Client is shutting down !\n");  
+            clientExit();
             exit(0);
             break;
         default:
@@ -79,7 +76,10 @@ void *betThreadHandler(void *arg) {
     printf("Waiting for the bet to start ...\n");
     sem_wait(semStartBet);
     clearTerminal();
-    bet(&client,&betList,&nbOfBetInProgress);
+    int betReturn = bet(&client,&betList,&nbOfBetInProgress);
+    if(betReturn == -1){
+        clientExit();
+    }
 }
 
 void *resultThreadHandler(void *arg) {
@@ -107,4 +107,12 @@ void *resultThreadHandler(void *arg) {
         }
         pthread_create(&betThread, NULL, betThreadHandler, NULL);
     }
+}
+
+void clientExit(){
+    sem_wait(semFile);
+    updateUserInformation(client.name, client.money);
+    sem_post(semFile);
+    kill(sharedMemoryContent.pid, SIGUSR2);
+    exit(0);
 }

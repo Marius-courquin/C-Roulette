@@ -95,7 +95,7 @@ void runGame(){
         serveurDatas.client.gain = -1;
         serveurDatas.client.username[0] = '\0';
         serveurDatas.resultNumber = rand()%37;
-        printf("the value is %d\n",serveurDatas.resultNumber);
+        printf("Draw result is %d !\n", serveurDatas.resultNumber);
         writeSharedMemory(serveurDatas, sharedMemoryId);
         postDrawResult(semResultDraw ,serveurDatas.nbClient);
         partyState = STATE_NEW_ROUND;

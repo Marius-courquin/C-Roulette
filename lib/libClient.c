@@ -153,7 +153,7 @@ void displayUserInGame(){
     serverData sharedMemoryContent = readSharedMemory(sharedMemoryId);
     printf("User In Game : %d\n",sharedMemoryContent.nbClient);
 }
-void bet(clientData *client,betData **betList, int *nbOfBetInProgress ) {
+int bet(clientData *client,betData **betList, int *nbOfBetInProgress ) {
     betData newBet;
     char userInput[20];
     int multiplicator = 0;
@@ -162,7 +162,7 @@ betting :
     displayRouletteTable();
     printf("Available money : %d$\n", client->money);
     displayBetInProgress(*betList, *nbOfBetInProgress);
-    printf("What do you want to bet on ? ( END to stop the bet )\n");
+    printf("What do you want to bet on ? ( END to stop the bet / QUIT to leave the table)\n");
     strcpy(userInput, "");
     fgets(userInput, 20, stdin);
     userInput[strlen(userInput)-1] = '\0';
@@ -171,18 +171,27 @@ betting :
         displayBetInProgress(*betList, *nbOfBetInProgress);
         printf("End of the bet !\n");
         printf("Waiting for the draw !\n");
+        return 0;
+    }
+    else if (strcmp(userInput, "QUIT") == 0) {
+        if (*nbOfBetInProgress > 0) {
+            clearTerminal();
+            printf("You can't leave the table while you have bet !\n");
+            goto betting;
+        }
+        printf("You left the table !\n");
+        return -1;
     }
     else if(checkBetValue(userInput, &multiplicator) == -1){
         clearTerminal();
         printf("Invalid bet !\n");
         goto betting;
-        
     }
     else {
         int money = inputBet(client);
         addNewBet(betList,nbOfBetInProgress, money, userInput, multiplicator);
-        clearTerminal();
         updateUserInformation(client->name, client->money);
+        clearTerminal();
         goto betting;
     }  
 
@@ -198,6 +207,10 @@ moneyInput :
     if(atoi(userInput) > client->money) {
         printf("You don't have enough money to bet that much !\n"); 
         goto moneyInput;   
+    }
+    else if(atoi(userInput) <= 0) {
+        printf("You can't bet that much !\n");
+        goto moneyInput;
     } 
     else {
         client->money -= atoi(userInput);
@@ -355,18 +368,21 @@ int checkResult1st12(int result){
         if (i == result)
             return 1;  
     }
+    return 0;
 }
 int checkResult2nd12(int result){
     for(int i = 13; i <= 24 ; i++){
         if (i == result)
             return 1;  
     }
+    return 0;
 }
 int checkResult3rd12(int result){
     for(int i = 25; i <= 36 ; i++){
         if (i == result)
             return 1;  
     }
+    return 0;
 }
 int checkResultEven(int result){
     if(result % 2 == 0)

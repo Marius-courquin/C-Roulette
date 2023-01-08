@@ -2,7 +2,8 @@
 
 # Launch the dealer which is locate in ./bin/server
 
-if [ ! -e userStorage ]
+#check if server file exist if not make it
+if [ ! -e ./bin/server ]
 then
     make
 fi

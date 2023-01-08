@@ -98,6 +98,7 @@ void *resultThreadHandler(void *arg) {
         gain = computeGain(sharedMemoryContent.resultNumber,betList,nbOfBetInProgress);
         if(nbOfBetInProgress > 0){
             free(betList);
+            betList = NULL;
             nbOfBetInProgress = 0;
         }
         writeBestBet(gain,client.name);

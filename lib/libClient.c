@@ -243,7 +243,7 @@ int computeGain(int drawResult,betData *betList,int arrayLen){
                 }
             }
         }
-        decomposition(composition,&compositionLen,betList[i].bet);
+       decomposition(composition,&compositionLen,betList[i].bet);
         if(compositionLen > 0){
             for(int k = 0; k < compositionLen; k++){
                 if(composition[k] == drawResult){

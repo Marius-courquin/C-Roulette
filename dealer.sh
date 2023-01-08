@@ -8,5 +8,12 @@ then
     make
 fi
 
+
 clear
-./bin/server
+
+if [ ! -e /dev/shm/sem.roulette-file ]
+then
+    ./bin/server
+else 
+    echo "The dealer is already working !"
+fi

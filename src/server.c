@@ -46,7 +46,8 @@ void*serverSignalHandler(int signal, siginfo_t *info){
             exit(0);
             break;
         case SIGUSR1:
-            printf("A new player have join the table, n° %d.\n", info->si_pid);
+            printf("A new player have joined the table, n° %d.\n", info->si_pid);
+            printf("Sit down and let's play !\n");
             addMemoryTab(&tabPid, &pidTabLen, info->si_pid);
             serveurDatas.nbClient++;
             writeSharedMemory(serveurDatas, sharedMemoryId);
@@ -100,6 +101,5 @@ void runGame(){
         postDrawResult(semResultDraw ,serveurDatas.nbClient);
         partyState = STATE_NEW_ROUND;
         alarm(WAIT_NEW_ROUND);
-
     }
 }

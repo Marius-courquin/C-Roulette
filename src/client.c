@@ -39,10 +39,10 @@ int main(int argc, char *argv[])
     }
     client.name = argv[1];
     system("clear");
-    printf("Welcome %s to the C-Roulette Game !\n", argv[1]);
     openAllSemaphore(&semResultDraw, &semStartBet, &semFile);
     sem_wait(semFile);
     client.money = userOnboarding(client.name, STARTING_MONEY);
+    printf("Welcome %s to the C-Roulette Game !\n", argv[1]);
     sem_post(semFile);
     printf("You have %d$ to play with !\n", client.money);
     sharedMemoryId = createSharedMemory();
@@ -60,7 +60,6 @@ void *clientSignalHandler(int signal, siginfo_t *info){
         case SIGINT:
             printf("Client is shutting down !\n");  
             clientExit();
-            exit(0);
             break;
         default:
             printf("Unknown signal %d\n",info->si_pid);
@@ -71,7 +70,7 @@ void *clientSignalHandler(int signal, siginfo_t *info){
 
 void *betThreadHandler(void *arg) { 
     sem_wait(semFile);
-    client.money = userOnboarding(client.name, STARTING_MONEY);
+    client.money = getUserMoney(client.name);
     sem_post(semFile);
     printf("Waiting for the bet to start ...\n");
     sem_wait(semStartBet);
@@ -112,6 +111,7 @@ void *resultThreadHandler(void *arg) {
 void clientExit(){
     sem_wait(semFile);
     updateUserInformation(client.name, client.money);
+    disconnectUser(client.name);
     sem_post(semFile);
     kill(sharedMemoryContent.pid, SIGUSR2);
     exit(0);

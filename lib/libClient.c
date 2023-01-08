@@ -31,6 +31,8 @@ int containSeparatorField(char *str, char separator){
     return 0;
 }
 int checkDigitOnly(char *str){
+    if(strlen(str) == 0)
+        return 0;
     for(int i = 0; i < strlen(str); i++){
         if(str[i] < '0' || str[i] > '9'){
             return 0;
@@ -221,7 +223,7 @@ moneyInput :
 void addNewBet(betData **betList, int *nbOfBetInProgress,int amount, char *bet, int multiplicator) {
     *betList = (betData*)realloc(*betList, sizeof(betData) * (*nbOfBetInProgress + 1));
     (*betList)[*nbOfBetInProgress].amount = amount;
-    strcpy((*betList)[*nbOfBetInProgress].bet,bet); ;
+    strcpy((*betList)[*nbOfBetInProgress].bet,bet);
     (*betList)[*nbOfBetInProgress].multiplicator = multiplicator;
     *nbOfBetInProgress = *nbOfBetInProgress + 1;
 }
@@ -245,7 +247,8 @@ int computeGain(int drawResult,betData *betList,int arrayLen){
         if(compositionLen > 0){
             for(int k = 0; k < compositionLen; k++){
                 if(composition[k] == drawResult){
-                    gain += betList[i].amount * betList[i].multiplicator;
+                    gain += (betList[i].amount) * (betList[i].multiplicator);
+                    composition[k] = 0;
                     flagWin = 1;
                     break;
                 }
@@ -261,15 +264,17 @@ int computeGain(int drawResult,betData *betList,int arrayLen){
             printf("You won "GRN"%d$ "RESET" on "RED"%s"RESET"\n",betList[i].amount * betList[i].multiplicator,betList[i].bet);
             flagWin = 0;
         }
+        compositionLen = 0;
     }
     if(gain > 0)
-        printf("The total gain is : "GRN"%d$\n"RESET"",gain);
+        printf("The total gain is : "GRN"%d$"RESET"\n",gain);
     else if(arrayLen == 0) {
         printf("You have not bet this round !\n");
-        printf(RED"NO BET = NO GAIN ! \n"RESET);
+        printf(RED"NO BET = NO GAIN !"RESET"\n");
     }
-    else
-        printf(""RED"You lost !\n"RESET"");
+    else{
+        printf(RED"You lost !\n"RESET);
+    }
     return gain;
 }
 

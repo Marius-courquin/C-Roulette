@@ -76,24 +76,26 @@ void updateUserInformation(char *name, int money) {
     rename("userStorageTemp", USER_STORAGE_PATH);
 }
 
-int userOnboarding(char *name, int money) {
+int userOnboarding(char *name, int *money) {
     printf("Connecting to the C-Roulette... \n");
     if (userAlreadyExist(name) == 0) {
-            addUserInformation(name, money);
+            addUserInformation(name, STARTING_MONEY);
+            *money = STARTING_MONEY;
             connectUser(name);
-            return money;
+            return 1;
     } else {
         if (userIsAlreadyConnected(name) == 1) {
             printf("This user is already connected ! \n");
-            exit(EXIT_FAILURE);
+            return -1;
         } else {
             int userActualMoney = readUserInformation(name);
             if (userActualMoney != -1) {
                 connectUser(name);
-                return userActualMoney;
+                *money = userActualMoney;
+                return 1;
             } else {
                 printf("Error while reading user information");
-                exit(EXIT_FAILURE);
+                return -1;
             }
         } 
     }
@@ -117,12 +119,12 @@ int getUserMoney(char *name) {
 }
 
 int userIsAlreadyConnected(char *name) {
-    FILE *file = openFile(USER_STORAGE_PATH,"r");
-
     char line[256];
     char *nameFromStorage;
     char *moneyFromStorage;
     char *isUserConnected;
+    FILE *file = openFile(USER_STORAGE_PATH,"r");
+
     while(fgets(line, sizeof(line), file) != NULL) {
         nameFromStorage = strtok(line, ":");
         moneyFromStorage = strtok(NULL, ":");

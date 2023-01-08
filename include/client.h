@@ -3,9 +3,6 @@
 #define ROULETTE 1
 #endif
 
-
-#define STARTING_MONEY 1000
-
 #define BLCK   "\x1B[30m"
 #define RED   "\x1B[31m"
 #define GRN   "\x1B[32m"
@@ -33,4 +30,4 @@ typedef struct {
 void *clientSignalHandler(int signal, siginfo_t *info);
 void *betThreadHandler(void *arg);
 void *resultThreadHandler(void *arg);
-void clientExit();
+void clientExit(int status);

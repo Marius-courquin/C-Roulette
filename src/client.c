@@ -41,9 +41,12 @@ int main(int argc, char *argv[])
     system("clear");
     openAllSemaphore(&semResultDraw, &semStartBet, &semFile);
     sem_wait(semFile);
-    client.money = userOnboarding(client.name, STARTING_MONEY);
-    printf("Welcome %s to the C-Roulette Game !\n", argv[1]);
+    int status = userOnboarding(client.name, &client.money);
     sem_post(semFile);
+    if(status == -1){
+        clientExit(-1);
+    }
+    printf("Welcome %s to the C-Roulette Game !\n", client.name);
     printf("You have %d$ to play with !\n", client.money);
     sharedMemoryId = createSharedMemory();
     sharedMemoryContent = readSharedMemory(sharedMemoryId);   
@@ -59,7 +62,7 @@ void *clientSignalHandler(int signal, siginfo_t *info){
     switch(signal){
         case SIGINT:
             printf("Client is shutting down !\n");  
-            clientExit();
+            clientExit(1);
             break;
         default:
             printf("Unknown signal %d\n",info->si_pid);
@@ -77,7 +80,7 @@ void *betThreadHandler(void *arg) {
     clearTerminal();
     int betReturn = bet(&client,&betList,&nbOfBetInProgress);
     if(betReturn == -1){
-        clientExit();
+        clientExit(1);
     }
 }
 
@@ -108,11 +111,13 @@ void *resultThreadHandler(void *arg) {
     }
 }
 
-void clientExit(){
-    sem_wait(semFile);
-    updateUserInformation(client.name, client.money);
-    disconnectUser(client.name);
-    sem_post(semFile);
-    kill(sharedMemoryContent.pid, SIGUSR2);
+void clientExit(int status){
+    if(status == 1){
+        sem_wait(semFile);
+        updateUserInformation(client.name, client.money);
+        disconnectUser(client.name);
+        sem_post(semFile);
+        kill(sharedMemoryContent.pid, SIGUSR2);
+    }
     exit(0);
 }

@@ -48,7 +48,7 @@ void eraseClient(pid_t **tabPid, int *lenTabPid, pid_t pid){
 
 void killAllClient(pid_t *tabPid, int lenTabPid){
     for(int i = 0; i <  lenTabPid; i++){
-        kill(tabPid[i], SIGKILL);
+        kill(tabPid[i], SIGINT);
     }
 }
 

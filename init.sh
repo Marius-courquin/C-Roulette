@@ -20,7 +20,7 @@ else
         echo "Player account created"
     fi
     echo "Adding alias PRPLACE"
-    echo "alias PRPLACE='cd /home/ubuntu/C-Roulette;./player.s'" >> /home/player/.bashrc
+    echo "alias PRPLACE='cd /home/ubuntu/C-Roulette;./player.sh'" >> /home/player/.bashrc
 fi
 echo "--------------------------------------------------------------------------------"
 
@@ -28,4 +28,4 @@ echo "Setup script done"
 
 ./dealer.sh
 
-echo "You can now use the command 'PROULETTE yourname' to start playing !"
+echo "You can now use the command 'PLAY yourname' to start playing !"

@@ -96,17 +96,16 @@ void *resultThreadHandler(void *arg) {
         sharedMemoryContent = readSharedMemory(sharedMemoryId);
         displayBetResult(sharedMemoryContent.resultNumber);
         gain = computeGain(sharedMemoryContent.resultNumber,betList,nbOfBetInProgress);
+        if(nbOfBetInProgress > 0){
+            free(betList);
+            nbOfBetInProgress = 0;
+        }
         writeBestBet(gain,client.name);
-
         sem_wait(semFile);
         updateUserInformation(client.name, client.money + gain);
         sem_post(semFile);
         
         displayBestBet();
-        if(nbOfBetInProgress > 0){
-            free(betList);
-            nbOfBetInProgress = 0;
-        }
         pthread_create(&betThread, NULL, betThreadHandler, NULL);
     }
 }

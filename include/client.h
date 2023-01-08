@@ -20,7 +20,7 @@ typedef struct {
 } clientData ;
 
 typedef struct {
-    char bet[20];
+    char bet[30];
     int amount;
     int multiplicator;
 } betData;

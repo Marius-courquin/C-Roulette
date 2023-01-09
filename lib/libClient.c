@@ -348,21 +348,21 @@ int checkResult19to36 (int result){
     return 0;
 }
 int checkResult2to1 (int result) {
-    for(int i = 3; i <= 36 ; i+=2){
+    for(int i = 3; i <= 36 ; i+=3){
         if (i == result)
             return 1;
     }
     return 0;
 }
 int checkResult2to2(int result) {
-    for(int i = 2; i <= 35 ; i+=2){
+    for(int i = 2; i <= 35 ; i+=3){
         if (i == result)
             return 1;
     }
     return 0;
 }
 int checkResult2to3(int result) {
-    for(int i = 1; i <= 34 ; i+=2){
+    for(int i = 1; i <= 34 ; i+=3){
         if (i == result)
             return 1;
     }

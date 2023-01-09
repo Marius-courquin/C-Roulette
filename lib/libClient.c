@@ -124,7 +124,7 @@ int checkComposition(int betTab[],int compositionCount, int *multiplicator){
                             return -1;
                     case 4 :
                         if( (abs(betTab[1] - betTab[0]) == 1 ) && (abs(betTab[2] - betTab[3]) == 1)){
-                            if( (abs(betTab[0] - betTab[2]) == 2) && (abs(betTab[1] - betTab[3]) == 2)) {
+                            if( (abs(betTab[0] - betTab[2]) == 3) && (abs(betTab[1] - betTab[3]) == 3)) {
                                 *multiplicator = 9;
                                 return 1;
                             }

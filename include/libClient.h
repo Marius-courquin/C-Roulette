@@ -89,9 +89,9 @@ static func functionsArray[12] = {
     &checkResult2nd12,
     &checkResult3rd12,
     &checkResult1to18,
-    &checkResultOdd,
+    &checkResultEven,
     &checkIfResultIsRed,
     &checkIfResultIsBlack,
-    &checkResultEven,
+    &checkResultOdd,
     &checkResult19to36
 };

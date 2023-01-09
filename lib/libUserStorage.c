@@ -18,7 +18,8 @@ int readUserInformation(char *name) {
     while(fgets(line, sizeof(line), file) != NULL) {
         nameFromStorage = strtok(line, ":");
         moneyFromStorage = strtok(NULL, ":");
-        moneyFromStorage[strlen(moneyFromStorage) - 1] = '\0';
+        if(moneyFromStorage[strlen(moneyFromStorage) - 1] == '\n')
+            moneyFromStorage[strlen(moneyFromStorage) - 1] = '\0';
         if (strcmp(nameFromStorage, name) == 0) {
             return atoi(moneyFromStorage);
         }

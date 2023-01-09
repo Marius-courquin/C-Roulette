@@ -19,8 +19,8 @@ else
     if [ $? -ne 0 ]; then
         echo "Player account created"
     fi
-    echo "Adding alias PRPLACE"
-    echo "alias PRPLACE='cd /home/ubuntu/C-Roulette;./player.sh'" >> /home/player/.bashrc
+    echo "Adding alias PLAY"
+    echo "alias PLAY='cd /home/ubuntu/C-Roulette;./player.sh'" >> /home/player/.bashrc
 fi
 echo "--------------------------------------------------------------------------------"
 

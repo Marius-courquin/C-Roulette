@@ -21,6 +21,7 @@ make reset
 
 # Improvements
 - [ ] Add interaction to the dealer
-- [ ] Add user identification to avoid multiple connections
+- [ ] Add a way to manage users money
+- [ ] Add last bets results visualization to the player
 - [ ] Add a way to manage game's settings
 - [ ] ...
